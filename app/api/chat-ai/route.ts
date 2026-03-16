@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 import { GoogleGenAI } from "@google/genai";
 // The client gets the API key from the environment variable `GEMINI_API_KEY`.
-const ai = new GoogleGenAI({apiKey:process.env.AI_API_KEY ?? "AIzaSyBmE-kjRUfUXZ1YTqI5xBLuIVsahZeyutU"});
+const ai = new GoogleGenAI({apiKey:process.env.AI_API_KEY});
 
-async function main(userPrompt:string) {
+async function generateResponse(userPrompt:string) {
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: userPrompt,
@@ -33,20 +33,14 @@ async function main(userPrompt:string) {
 }
 
 
-export const handler = async (req: Request, res: NextApiResponse) => {
-  try {
-    const {message} = await req.json();
-    const response = await main(message);
-    
-    return Response.json({
-        data:response,
-        status:200
-    })
-  } catch (e) {
-    console.log(e)
-    return Response.json({
-      message: "Something went wrong! Try again!",
-      status: 400,
-    });
+export async function POST(req: Request) {
+    try {
+      const { message } = await req.json();
+      const response = await generateResponse(message);
+  
+      return Response.json({ data: response, status: 200 });
+    } catch (e) {
+      console.log(e);
+      return Response.json({ message: "Something went wrong! Try again!", status: 400 });
+    }
   }
-};
