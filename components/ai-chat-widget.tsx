@@ -84,15 +84,15 @@ export function AiChatWidget() {
 
           <div className="relative flex items-center justify-between gap-4 border-b border-border/70 px-4 py-3">
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-foreground">Chat</div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-sm font-semibold text-black">Chat</div>
+              <div className="text-xs text-black">
                 {isLoggedIn ? "Ask away." : "Log in to message the AI."}
               </div>
             </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="inline-flex h-9 w-9 text-white items-center justify-center rounded-xl border border-border/70 bg-background/30 text-muted-foreground transition hover:bg-background/45"
+              className="inline-flex h-9 w-9 text-black items-center justify-center rounded-xl border border-border/70 bg-background/30 transition hover:bg-background/45"
               aria-label="Close chat"
             >
               <X className="h-4 w-4 color-white" />
@@ -117,8 +117,8 @@ export function AiChatWidget() {
                     <div
                       className={
                         m.role === "user"
-                          ? "max-w-[85%] rounded-2xl rounded-br-md bg-primary px-3 py-2 text-sm text-primary-foreground shadow-sm"
-                          : "max-w-[85%] rounded-2xl rounded-bl-md border border-border/70 bg-background/25 px-3 py-2 text-sm text-foreground shadow-sm"
+                          ? "max-w-[85%] rounded-2xl rounded-br-md bg-primary px-3 py-2 text-sm text-black shadow-sm"
+                          : "max-w-[85%] rounded-2xl rounded-bl-md border border-border/70 bg-background/25 px-3 py-2 text-sm text-black  shadow-sm"
                       }
                     >
                       {m.content}
@@ -127,7 +127,7 @@ export function AiChatWidget() {
                 ))}
                 {busy && (
                   <div className="flex justify-start">
-                    <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-border/70 bg-background/25 px-3 py-2 text-sm text-muted-foreground">
+                    <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-border/70 bg-background/25 px-3 py-2 text-sm text-black">
                       Thinking…
                     </div>
                   </div>
@@ -136,8 +136,8 @@ export function AiChatWidget() {
             </div>
 
             {!isLoggedIn && (
-              <div className="mt-3 rounded-xl border border-border/70 bg-background/25 px-3 py-3 text-sm text-muted-foreground">
-                <div className="font-medium text-foreground">Sign in required</div>
+              <div className="mt-3 rounded-xl border border-border/70 bg-background/25 px-3 py-3 text-sm text-black">
+                <div className="font-medium text-black">Sign in required</div>
                 <div className="mt-1 text-xs leading-relaxed">
                   You need to login first to chat with AI.
                 </div>
@@ -153,13 +153,13 @@ export function AiChatWidget() {
                 }}
                 placeholder={isLoggedIn ? "Type a message…" : "Login to chat…"}
                 disabled={!isLoggedIn || busy}
-                className="h-10 flex-1 rounded-xl border border-border/70 bg-background/30 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition focus:border-primary/70 focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-70"
+                className="h-10 flex-1 rounded-xl border border-border/70 bg-background/30 px-3 text-sm text-black placeholder:text-muted-foreground outline-none transition focus:border-primary/70 focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-70"
               />
               <button
                 type="button"
                 onClick={() => {send()}}
                 disabled={!isLoggedIn || busy || !draft.trim()}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-black shadow-sm transition hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
                 aria-label="Send message"
               >
                 <Send className="h-4 w-4" />
@@ -177,7 +177,7 @@ export function AiChatWidget() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_16px_40px_-18px_rgba(0,0,0,0.8)] transition hover:bg-primary/90 focus:outline-none focus:ring-4 focus:ring-primary/25"
+        className="fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary text-black shadow-[0_16px_40px_-18px_rgba(0,0,0,0.8)] transition hover:bg-primary/90 focus:outline-none focus:ring-4 focus:ring-primary/25"
         aria-label={open ? "Close chat" : "Open chat"}
       >
         <span className="relative">
