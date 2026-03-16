@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Button } from "../components/ui/button"
 import { MessageCircle, Send, X } from "lucide-react"
+import axios from "axios"
+import { useAuth } from "./auth/auth-provider"
 
 type ChatMessage = {
   id: string
@@ -11,27 +13,12 @@ type ChatMessage = {
   content: string
 }
 
-function getLoggedInState() {
-  try {
-    const w = window as unknown as { __PITCHSAP_IS_LOGGED_IN__?: boolean }
-    if (typeof w.__PITCHSAP_IS_LOGGED_IN__ === "boolean") return w.__PITCHSAP_IS_LOGGED_IN__
-
-    const ls = window.localStorage
-    const candidates = [
-      "auth_token",
-      "access_token",
-      "token",
-      "session",
-      "user",
-      "pitchsap_auth",
-    ]
-    if (candidates.some((k) => Boolean(ls.getItem(k)))) return true
-
-    if (document.cookie && /session|token|auth/i.test(document.cookie)) return true
-  } catch {
-    // ignore
-  }
-  return false
+async function callAI(message:string){
+  const res = await axios.post("/api/chat-ai",{
+    message:message
+  });
+  console.log(res)
+  return res.data;
 }
 
 function uid() {
@@ -40,7 +27,7 @@ function uid() {
 
 export function AiChatWidget() {
   const [open, setOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const { isLoggedIn } = useAuth()
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: uid(),
@@ -52,21 +39,6 @@ export function AiChatWidget() {
   const [busy, setBusy] = useState(false)
   const listRef = useRef<HTMLDivElement | null>(null)
 
-  useEffect(() => {
-    const refresh = () => setIsLoggedIn(getLoggedInState())
-    refresh()
-
-    const onStorage = () => refresh()
-    window.addEventListener("storage", onStorage)
-    window.addEventListener("focus", refresh)
-    document.addEventListener("visibilitychange", refresh)
-    return () => {
-      window.removeEventListener("storage", onStorage)
-      window.removeEventListener("focus", refresh)
-      document.removeEventListener("visibilitychange", refresh)
-    }
-  }, [])
-
   const canChat = isLoggedIn && !busy
 
   const send = async () => {
@@ -74,19 +46,15 @@ export function AiChatWidget() {
     if (!content || !canChat) return
     setDraft("")
 
-    const userMsg: ChatMessage = { id: uid(), role: "user", content }
+    const userMsg: ChatMessage = { id: uid(), role: "user", content: content }
     setMessages((prev) => [...prev, userMsg])
     setBusy(true)
-
+    
     try {
-      await new Promise((r) => setTimeout(r, 450))
-      const assistantMsg: ChatMessage = {
-        id: uid(),
-        role: "assistant",
-        content:
-          "Chat is wired up visually. Next step is connecting this to your AI endpoint.",
-      }
-      setMessages((prev) => [...prev, assistantMsg])
+     const res = await callAI(content);
+     console.log(res)
+     const aiMsg: ChatMessage = {id:uid(),role:"assistant",content:res.data}
+     setMessages((prev)=>[...prev,aiMsg])
     } finally {
       setBusy(false)
     }
@@ -108,7 +76,7 @@ export function AiChatWidget() {
         role="dialog"
         aria-label="AI chat"
       >
-        <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-secondary/30 backdrop-blur-xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.65)]">
+        <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-violet-200 backdrop-blur-xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.65)]">
           <div aria-hidden className="pointer-events-none absolute inset-0">
             <div className="absolute -top-20 -left-16 h-48 w-48 rounded-full bg-primary/25 blur-3xl" />
             <div className="absolute -bottom-24 -right-16 h-56 w-56 rounded-full bg-accent/20 blur-3xl" />
@@ -124,10 +92,10 @@ export function AiChatWidget() {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border/70 bg-background/30 text-muted-foreground transition hover:bg-background/45 hover:text-foreground"
+              className="inline-flex h-9 w-9 text-white items-center justify-center rounded-xl border border-border/70 bg-background/30 text-muted-foreground transition hover:bg-background/45"
               aria-label="Close chat"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4 color-white" />
             </button>
           </div>
 
@@ -171,13 +139,7 @@ export function AiChatWidget() {
               <div className="mt-3 rounded-xl border border-border/70 bg-background/25 px-3 py-3 text-sm text-muted-foreground">
                 <div className="font-medium text-foreground">Sign in required</div>
                 <div className="mt-1 text-xs leading-relaxed">
-                  You can open the chat anytime, but you’ll only be able to send
-                  messages after logging in.
-                </div>
-                <div className="mt-3">
-                  <Button asChild className="h-9 px-4">
-                    <Link href="#">Login</Link>
-                  </Button>
+                  You need to login first to chat with AI.
                 </div>
               </div>
             )}
@@ -195,7 +157,7 @@ export function AiChatWidget() {
               />
               <button
                 type="button"
-                onClick={() => void send()}
+                onClick={() => {send()}}
                 disabled={!isLoggedIn || busy || !draft.trim()}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
                 aria-label="Send message"

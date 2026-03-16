@@ -113,7 +113,7 @@ export function Pricing() {
             >
               <span
                 className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-transform ${
-                  isAnnual ? 'translate-x-8' : 'translate-x-1'
+                  isAnnual ? 'translate-x-1' : 'translate-x-[-120%]'
                 }`}
               />
             </button>
@@ -125,7 +125,7 @@ export function Pricing() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16">
+        <div className="grid md:grid-cols-3 gap-15 max-w-6xl mx-auto mb-16">
           {plans.map((plan, index) => {
             const Icon = plan.icon
             const displayPrice = isAnnual 

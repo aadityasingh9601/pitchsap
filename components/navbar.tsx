@@ -4,9 +4,11 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "../components/ui/button"
 import { Menu, X } from "lucide-react"
+import { useAuth } from "./auth/auth-provider"
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { isLoggedIn, toggle } = useAuth()
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -56,8 +58,11 @@ export function Navbar() {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center gap-4">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6">
-              Login
+            <Button
+              onClick={toggle}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6"
+            >
+              {isLoggedIn ? "Logout" : "Login"}
             </Button>
           </div>
 
@@ -110,8 +115,14 @@ export function Navbar() {
               >
                 Contact Us
               </Link>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium w-full mt-2">
-                Login
+              <Button
+                onClick={() => {
+                  toggle()
+                  setIsMenuOpen(false)
+                }}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium w-full mt-2"
+              >
+                {isLoggedIn ? "Logout" : "Login"}
               </Button>
             </nav>
           </div>
