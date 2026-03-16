@@ -33,7 +33,7 @@ async function main(userPrompt:string) {
 }
 
 
-export const POST = async (req: Request, res: NextApiResponse) => {
+export const handler = async (req: Request, res: NextApiResponse) => {
   try {
     const {message} = await req.json();
     const response = await main(message);
